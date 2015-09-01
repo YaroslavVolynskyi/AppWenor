@@ -1,17 +1,11 @@
 package com.yarik.wenor;
 
 import java.io.IOException;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -39,39 +33,11 @@ public class WebArticlesLoader extends AsyncTaskLoader<List<Story>> {
     private List<Story> articlesList;
 
     private static final String URL = "https://nextto.com/homework.txt?";
-
     public WebArticlesLoader(final Context context) {
         super(context);
         this.context = context;
     }
 
-    private void trustEveryone() {
-        try {
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
-
-                @Override
-                public boolean verify(final String hostname, final SSLSession session) {
-
-                    return true;
-                }});
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager(){
-                @Override
-                public void checkClientTrusted(final X509Certificate[] chain,
-                    final String authType) throws CertificateException {}
-                @Override
-                public void checkServerTrusted(final X509Certificate[] chain,
-                    final String authType) throws CertificateException {}
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }}}, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(
-                context.getSocketFactory());
-        } catch (Exception e) { // should never happen
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public List<Story> loadInBackground() {
