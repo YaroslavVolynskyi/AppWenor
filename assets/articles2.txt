@@ -1,0 +1,32 @@
+[{ 
+
+"articleId": 1,
+"backgroundColor": "#FFFFFF",
+"articleType": "article",
+"title": "COPY________This is a title",
+"subtitle": "This is the subtitle. it is"
+"imageUrl": "http://animage.com",
+"fulltext": "This is the full text of the story. It is super interesting! So many details111!"
+}, 
+{ 
+"articleId": 2,
+"backgroundColor": "#FF0000",
+"articleType": "newsflash",
+"title": "COPY______This is a newsflash",
+"fulltext": "This is the full text of the story. It is super interesting! So many details222!"
+}, 
+{ 
+"articleId": 3,
+"backgroundColor": "#FF00FF",
+"articleType": "visual",
+"title": "COPY______This is a title",
+"imageUrls":
+[
+ 	"http://animage.com",
+    "http://animage.com",
+    "http://animage.com",
+    "http://animage.com"
+],
+"fulltext": "This is the full text of the story. It is super interesting! So many details333!"
+
+} ]

@@ -1,0 +1,10 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="AppBaseTheme" parent="android:Theme">
+    </style>
+
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:textColor">@color/textColorGray</item>
+    </style>
+
+</resources>
