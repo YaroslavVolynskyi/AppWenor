@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -90,15 +93,25 @@ public class StoriesListViewAdapter extends ArrayAdapter<Story> {
                         R.layout.visual_layout, null);
                     visualHolder.titleTextView = (TextView) view
                         .findViewById(R.id.storyTitleTextView);
-                    visualHolder.galleryGridView = (GridView) view
-                        .findViewById(R.id.storyGridView);
+                    visualHolder.galleryLinearLayout = (LinearLayout) view
+                        .findViewById(R.id.galleryLinearLayout);
                     view.setTag(visualHolder);
                 }
                 visualHolder = (VisualViewHolder) view.getTag();
                 visualHolder.titleTextView.setText(story.getTitle());
                 if ((story.getImageUrls() != null) && (story.getImageUrls().length > 1)) {
-                    GalleryGridAdapter gridAdapter = new GalleryGridAdapter(story.getImageUrls(), this.context, this.imageLoadingListener);
-                    visualHolder.galleryGridView.setAdapter(gridAdapter);
+                    /*GalleryGridAdapter gridAdapter = new GalleryGridAdapter(story.getImageUrls(), this.context, this.imageLoadingListener);
+                    visualHolder.galleryGridView.setAdapter(gridAdapter);*/
+                	for (String imageUrl : story.getImageUrls()) {
+                		ImageView imageView = new ImageView(context);
+                        imageView.setPadding(5, 5, 5, 5);
+                        ImageLoader.getInstance().displayImage(imageUrl,
+                                imageView,
+                                this.imageLoadingListener
+                                );
+                        //imageView.setScaleType(ScaleType.FIT_XY);
+                        visualHolder.galleryLinearLayout.addView(imageView);
+                	}
                 }
                 break;
         }
@@ -130,7 +143,7 @@ public class StoriesListViewAdapter extends ArrayAdapter<Story> {
 
     private static class VisualViewHolder {
         public TextView titleTextView;
-        public GridView galleryGridView;
+        public LinearLayout galleryLinearLayout;
     }
 
     private final ImageLoadingListener imageLoadingListener = new ImageLoadingListener() {

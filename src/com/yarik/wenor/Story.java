@@ -120,7 +120,7 @@ public class Story {
                 case "visual":
                     return 2;
                 default:
-                    return 2;
+                    return 1;
             }
         }
         return 1;
