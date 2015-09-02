@@ -5,7 +5,7 @@
 "articleType": "article",
 "title": "This is a title",
 "subtitle": "This is the subtitle. it is"
-"imageUrl": "http://animage.com",
+"imageUrl": "http://lorempixel.com/300/300/abstract/",
 "fulltext": "This is the full text of the story. It is super interesting! So many details111!"
 }, 
 { 
@@ -22,10 +22,10 @@
 "title": "This is a title",
 "imageUrls":
 [
- 	"http://animage.com",
-    "http://animage.com",
-    "http://animage.com",
-    "http://animage.com"
+ 	"http://lorempixel.com/300/300/abstract/",
+    "http://lorempixel.com/300/300/abstract/",
+    "http://lorempixel.com/300/300/abstract/",
+    "http://lorempixel.com/300/300/abstract/"
 ],
 "fulltext": "This is the full text of the story. It is super interesting! So many details333!"
 

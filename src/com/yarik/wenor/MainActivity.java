@@ -1,131 +1,130 @@
 package com.yarik.wenor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
-import android.app.LoaderManager;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONValue;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
-
 import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.Loader;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements
-		LoaderManager.LoaderCallbacks<List<Story>> {
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-	private ListView storiesListView;
-	private StoriesListViewAdapter adapter;
+public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<List<Story>> {
 
-	private ScrollView fullArticleScrollView;
-	private TextView fullArticleTextView;
+    private ListView storiesListView;
 
-	private Handler handler;
-	
-	private boolean needWebArticles = true;
+    private StoriesListViewAdapter adapter;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+    private ScrollView fullArticleScrollView;
 
-		storiesListView = (ListView) findViewById(R.id.storiesListView);
-		storiesListView
-				.setOnItemClickListener(storiesListViewItemClickListener);
+    private TextView fullArticleTextView;
 
-		getLoaderManager().initLoader(0, null, this);
+    private Handler handler;
 
-		fullArticleScrollView = (ScrollView) findViewById(R.id.articlesFulltextScrollView);
-		fullArticleTextView = (TextView) findViewById(R.id.articlesFulltextTextView);
+    private static final int LOAD_DELAY = 4000;
 
-		fullArticleTextView.setOnClickListener(fullTextClickListener);
-		
-		if (needWebArticles) {
-			Handler handler = new Handler();
-			handler.postDelayed(new Runnable() {
-				
-				@Override
-				public void run() {
-					getLoaderManager().initLoader(1, null, MainActivity.this);
-				}
-			}, 4000);
-			needWebArticles = false;
-		}
-	}
+    private static final int LOCAL_LOADER_ID = 0;
 
-	private OnClickListener fullTextClickListener = new OnClickListener() {
+    private static final int WEB_LOADER_ID = 1;
 
-		@Override
-		public void onClick(View v) {
-			Animation slideDown = AnimationUtils.loadAnimation(
-					MainActivity.this, R.anim.slide_down_animation);
-			fullArticleScrollView.startAnimation(slideDown);
-			fullArticleScrollView.setVisibility(View.GONE);
-		}
-	};
+    @Override
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-	private OnItemClickListener storiesListViewItemClickListener = new OnItemClickListener() {
+        initImageLoader();
 
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
-			fullArticleTextView.setText(((Story) storiesListView.getAdapter()
-					.getItem(position)).getFullText());
-			fullArticleScrollView.setBackgroundColor(Color
-					.parseColor(((Story) storiesListView.getAdapter().getItem(
-							position)).getBackgroundColor()));
-			fullArticleScrollView.setVisibility(View.VISIBLE);
-			Animation slideUp = AnimationUtils.loadAnimation(MainActivity.this,
-					R.anim.slide_up_animation);
-			fullArticleScrollView.startAnimation(slideUp);
-		}
+        this.storiesListView = (ListView) findViewById(R.id.storiesListView);
+        this.storiesListView.setOnItemClickListener(this.storiesListViewItemClickListener);
 
-	};
+        this.fullArticleScrollView = (ScrollView) findViewById(R.id.articlesFulltextScrollView);
+        this.fullArticleTextView = (TextView) findViewById(R.id.articlesFulltextTextView);
+        this.fullArticleTextView.setOnClickListener(this.fullTextClickListener);
 
-	public static interface Donwloader {
-		void downloaded();
-	}
-	
-	@Override
-	public Loader<List<Story>> onCreateLoader(int id, Bundle args) {
-		if (id == 1) {
-			return new WebArticlesLoader(this);
-		}
-		return new ArticlesLoader(this);
-	}
+        getLoaderManager().initLoader(MainActivity.LOCAL_LOADER_ID, null, this);
+        this.handler = new Handler();
+        this.handler.postDelayed(new Runnable() {
 
-	@Override
-	public void onLoadFinished(Loader<List<Story>> loader, List<Story> articlesList) {
-		if (adapter == null) {
-			adapter = new StoriesListViewAdapter(this, articlesList);
-			storiesListView.setAdapter(adapter);
-		} else {
-			((StoriesListViewAdapter) storiesListView.getAdapter()).addStories(articlesList);
-		}
-		adapter.notifyDataSetChanged();
-	}
+            @Override
+            public void run() {
+                getLoaderManager().initLoader(MainActivity.WEB_LOADER_ID, null, MainActivity.this);
+            }
+        }, MainActivity.LOAD_DELAY);
+    }
 
-	@Override
-	public void onLoaderReset(Loader<List<Story>> loader) {
-	}
+    @Override
+    public Loader<List<Story>> onCreateLoader(final int id, final Bundle args) {
+        if (id == MainActivity.LOCAL_LOADER_ID) {
+            return new ArticlesLoader(MainActivity.this);
+        }
+        return new WebArticlesLoader(MainActivity.this);
+    }
+
+    @Override
+    public void onLoadFinished(final Loader<List<Story>> loader, final List<Story> articlesList) {
+        if (MainActivity.this.adapter == null) {
+            MainActivity.this.adapter = new StoriesListViewAdapter(MainActivity.this, articlesList);
+            MainActivity.this.storiesListView.setAdapter(MainActivity.this.adapter);
+        } else {
+            ((StoriesListViewAdapter) MainActivity.this.storiesListView.getAdapter()).addStories(articlesList);
+        }
+        MainActivity.this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onLoaderReset(final Loader<List<Story>> arg0) {
+    }
+
+    private final OnClickListener fullTextClickListener = new OnClickListener() {
+
+        @Override
+        public void onClick(final View v) {
+            Animation slideDown = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_animation);
+            MainActivity.this.fullArticleScrollView.startAnimation(slideDown);
+            MainActivity.this.fullArticleScrollView.setVisibility(View.GONE);
+        }
+    };
+
+    private final OnItemClickListener storiesListViewItemClickListener = new OnItemClickListener() {
+
+        @Override
+        public void onItemClick(final AdapterView<?> parent, final View view, final int position,
+            final long id) {
+            MainActivity.this.fullArticleTextView.setText(((Story) MainActivity.this.storiesListView.getAdapter()
+                .getItem(position)).getFullText());
+            MainActivity.this.fullArticleScrollView.setBackgroundColor(Color
+                .parseColor(((Story) MainActivity.this.storiesListView.getAdapter().getItem(
+                    position)).getBackgroundColor()));
+            MainActivity.this.fullArticleScrollView.setVisibility(View.VISIBLE);
+            Animation slideUp = AnimationUtils.loadAnimation(MainActivity.this,
+                R.anim.slide_up_animation);
+            MainActivity.this.fullArticleScrollView.startAnimation(slideUp);
+        }
+    };
+
+    private void initImageLoader() {
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+        .cacheInMemory(true)
+        .cacheOnDisk(true)
+        .build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+        .defaultDisplayImageOptions(defaultOptions)
+        .build();
+
+        ImageLoader.getInstance().init(config);
+    }
+
 }

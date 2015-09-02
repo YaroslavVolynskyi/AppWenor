@@ -6,5 +6,7 @@
     
     <dimen name="divider_height">3dp</dimen>
     <dimen name="articles_fulltext_scrollview_height">300dp</dimen>
+    <dimen name="article_image_height">80dp</dimen>
+    <dimen name="article_image_padding">5dp</dimen>
 
 </resources>

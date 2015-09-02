@@ -4,14 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/storyImageView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:maxHeight="@dimen/article_image_height"
+        android:maxWidth="@dimen/article_image_height"
+        android:padding="@dimen/article_image_padding"
         android:layout_weight="1"
-        android:src="@drawable/ic_launcher" >
+        android:src="@drawable/placeholder" >
     </ImageView>
 
     <LinearLayout
