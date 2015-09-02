@@ -4,8 +4,10 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Loader;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -34,7 +36,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     private Handler handler;
 
-    private static final int LOAD_DELAY = 4000;
+    private static final int LOAD_DELAY = 10000;
 
     private static final int LOCAL_LOADER_ID = 0;
 
@@ -55,14 +57,22 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         this.fullArticleTextView.setOnClickListener(this.fullTextClickListener);
 
         getLoaderManager().initLoader(MainActivity.LOCAL_LOADER_ID, null, this);
-        this.handler = new Handler();
-        this.handler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                getLoaderManager().initLoader(MainActivity.WEB_LOADER_ID, null, MainActivity.this);
-            }
-        }, MainActivity.LOAD_DELAY);
+        
+        if (internetConnected()) {
+	        this.handler = new Handler();
+	        this.handler.postDelayed(new Runnable() {
+	
+	            @Override
+	            public void run() {
+	                getLoaderManager().initLoader(MainActivity.WEB_LOADER_ID, null, MainActivity.this);
+	            }
+	        }, MainActivity.LOAD_DELAY);
+        }
+    }
+    
+    private boolean internetConnected() {
+    	ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    	return cm.getActiveNetworkInfo() != null;
     }
 
     @Override
@@ -97,21 +107,25 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             MainActivity.this.fullArticleScrollView.setVisibility(View.GONE);
         }
     };
-
+    
+    public void listViewItemClick(int position) {
+    	MainActivity.this.fullArticleTextView.setText(((Story) MainActivity.this.storiesListView.getAdapter()
+                .getItem(position)).getFullText());
+            MainActivity.this.fullArticleScrollView.setBackgroundColor(Color
+                .parseColor(((Story) MainActivity.this.storiesListView.getAdapter().getItem(
+                		position)).getBackgroundColor()));
+            MainActivity.this.fullArticleScrollView.setVisibility(View.VISIBLE);
+            Animation slideUp = AnimationUtils.loadAnimation(MainActivity.this,
+                R.anim.slide_up_animation);
+            MainActivity.this.fullArticleScrollView.startAnimation(slideUp);
+    }
+    
     private final OnItemClickListener storiesListViewItemClickListener = new OnItemClickListener() {
 
         @Override
         public void onItemClick(final AdapterView<?> parent, final View view, final int position,
             final long id) {
-            MainActivity.this.fullArticleTextView.setText(((Story) MainActivity.this.storiesListView.getAdapter()
-                .getItem(position)).getFullText());
-            MainActivity.this.fullArticleScrollView.setBackgroundColor(Color
-                .parseColor(((Story) MainActivity.this.storiesListView.getAdapter().getItem(
-                    position)).getBackgroundColor()));
-            MainActivity.this.fullArticleScrollView.setVisibility(View.VISIBLE);
-            Animation slideUp = AnimationUtils.loadAnimation(MainActivity.this,
-                R.anim.slide_up_animation);
-            MainActivity.this.fullArticleScrollView.startAnimation(slideUp);
+            listViewItemClick(position);
         }
     };
 
